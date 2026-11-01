@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "TikTok Studio Auto Uploader",
+  "version": "1.2",
+  "description": "Tự động chọn và upload video lên TikTok Studio từ file JSON và thư mục video",
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.tiktok.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
