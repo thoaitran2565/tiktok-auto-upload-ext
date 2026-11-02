@@ -5,88 +5,312 @@
     <title>TikTok Auto Upload</title>
     <style>
         body {
-            width: 300px;
+            width: 320px;
             font-family: Arial, sans-serif;
-            padding: 12px;
+            padding: 10px;
             background: #121212;
             color: #ffffff;
             margin: 0;
+            box-sizing: border-box;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #2a2a30;
+            padding-bottom: 6px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         h3 {
-            font-size: 14px;
-            margin-top: 0;
+            font-size: 13px;
+            margin: 0;
             color: #fe2c55;
-            margin-bottom: 10px;
         }
-        .box {
-            margin-bottom: 10px;
+        #estTimeBadge {
+            display: none;
+            font-size: 10px;
             background: #1e1e24;
-            padding: 8px;
+            border: 1px dashed #00ffcc;
+            color: #00ffcc;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        #uploadBtn {
+            background-color: #fe2c55;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0;
+            width: auto;
+        }
+        #uploadBtn:hover { background-color: #e02447; }
+        
+        .row-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .col {
+            flex: 1;
+            background: #1e1e24;
+            padding: 6px;
             border-radius: 6px;
             border: 1px solid #2a2a30;
+            text-align: center;
         }
-        label {
+        .file-upload-btn {
+            display: inline-block;
+            background: #2a2a30;
+            color: #fff;
+            padding: 6px 8px;
             font-size: 11px;
-            color: #a0a0ab;
-            display: block;
-            margin-bottom: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid #444;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        input[type="file"], select, input[type="number"] {
+        .file-upload-btn:hover { background: #3a3a44; }
+        
+        input[type="file"] { display: none; }
+        input[type="number"] {
             width: 100%;
             font-size: 11px;
             color: #fff;
             background: #121212;
             border: 1px solid #333;
-            padding: 5px;
+            padding: 6px 5px;
             border-radius: 4px;
             box-sizing: border-box;
+            text-align: center;
         }
-        button {
-            width: 100%;
-            background-color: #fe2c55;
-            color: white;
-            border: none;
+
+        /* Khung nội dung mô tả và hướng dẫn ban đầu */
+        #guidePanel {
+            background: #18181c;
+            border: 1px solid #2a2a30;
+            border-radius: 6px;
             padding: 8px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 4px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            color: #a0a0ab;
+            line-height: 1.4;
         }
-        button:hover { background-color: #e02447; }
+        #guidePanel b {
+            color: #00ffcc;
+        }
+
+        #progressPanel {
+            display: none;
+            margin-top: 8px;
+            border-top: 1px solid #2a2a30;
+            padding-top: 8px;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            margin-bottom: 6px;
+            background: #1e1e24;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border: 1px solid #2a2a30;
+        }
+        .progress-bar-container {
+            background: #333;
+            border-radius: 3px;
+            height: 6px;
+            width: 100%;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            background: #00ffcc;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .workflow-box {
+            border: 1px solid #3a3a44;
+            background: #18181c;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .steps-list {
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #777;
+        }
+        .step-item.active {
+            color: #fff;
+            font-weight: bold;
+        }
+        .step-item.done {
+            color: #00ffcc;
+        }
+        .step-icon {
+            width: 14px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spinning {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            color: #fe2c55;
+        }
+
+        #delayPanel {
+            display: none;
+            border: 2px dashed #fe2c55;
+            background: #1e161a;
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .delay-title {
+            font-size: 10px;
+            color: #a0a0ab;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+        .delay-timer {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fe2c55;
+        }
+
+        #thankYouPanel {
+            display: none;
+            text-align: center;
+            padding: 25px 10px;
+            background: #1e1e24;
+            border-radius: 6px;
+            border: 1px solid #2a2a30;
+            margin-top: 10px;
+        }
+        #thankYouPanel h4 {
+            color: #00ffcc;
+            font-size: 14px;
+            margin: 0 0 6px 0;
+        }
+        #thankYouPanel p {
+            font-size: 11px;
+            color: #a0a0ab;
+            margin: 0;
+            line-height: 1.4;
+        }
+
         #status {
             font-size: 11px;
-            margin-top: 8px;
+            margin-top: 4px;
             color: #00ffcc;
             word-break: break-all;
         }
     </style>
 </head>
 <body>
-    <h3>TikTok Auto Upload</h3>
-
-    <div class="box">
-        <label>1. Chọn file JSON:</label>
-        <input type="file" id="jsonFile" accept=".json">
+    <div class="header-container" id="headerContainer">
+        <h3>TikTok Auto Upload</h3>
+        <div class="header-left">
+            <span id="estTimeBadge">Dự kiến: --:--</span>
+            <button id="uploadBtn">Start</button>
+        </div>
     </div>
 
-    <div class="box">
-        <label>2. Video có trạng thái "Đã duyệt":</label>
-        <select id="videoSelect">
-            <option value="">-- Vui lòng chọn file JSON trước --</option>
-        </select>
+    <!-- Khu vực nhập liệu chính -->
+    <div id="inputSection">
+        <div class="row-container">
+            <div class="col">
+                <label for="videoFile" class="file-upload-btn" id="fileLabel">Choose Files</label>
+                <input type="file" id="videoFile" accept="video/mp4,video/webm,video/ogg" multiple>
+            </div>
+            <div class="col" style="max-width: 90px;">
+                <input type="number" id="delayMinutes" value="5" min="0" step="0.5" title="Thời gian chờ (phút)">
+            </div>
+        </div>
+
+        <!-- Phần nội dung mô tả và hướng dẫn khi mới vào -->
+        <div id="guidePanel">
+            <b>Hướng dẫn sử dụng:</b><br>
+            1. Mở trang <b>TikTok Studio Upload</b> trên trình duyệt.<br>
+            2. Bấm <b>Choose Files</b> để chọn một hoặc nhiều video từ máy tính (có thể chọn bổ sung nhiều lần).<br>
+            3. Nhập thời gian <b>Delay (phút)</b> chờ giữa các lần đăng.<br>
+            4. Bấm <b>Start</b> để bắt đầu tự động hóa tiến trình.
+        </div>
     </div>
 
-    <div class="box">
-        <label>3. Chọn các file video tương ứng từ máy:</label>
-        <input type="file" id="videoFile" accept="video/mp4,video/webm,video/ogg" multiple>
+    <!-- Bảng hiển thị tiến trình -->
+    <div id="progressPanel">
+        <div class="stats-row">
+            <span id="videoCountText">Đã đăng: 0/0</span>
+            <span id="percentText">0%</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+
+        <div class="workflow-box" id="workflowBox">
+           <div class="steps-list" id="stepsList">
+    <div class="step-item" id="step-0"><span class="step-icon">○</span><span>Bước 0: Đợi trang upload sẵn sàng</span></div>
+    <div class="step-item" id="step-1"><span class="step-icon">○</span><span>Bước 1: Giải mã tệp video</span></div>
+    <div class="step-item" id="step-2"><span class="step-icon">○</span><span>Bước 2: Kéo thả file vào khung</span></div>
+    <div class="step-item" id="step-3"><span class="step-icon">○</span><span>Bước 3: Chờ video tải lên hoàn tất</span></div>
+    <div class="step-item" id="step-4"><span class="step-icon">○</span><span>Bước 4: Nhập mô tả & Hashtag</span></div>
+    <div class="step-item" id="step-5"><span class="step-icon">○</span><span>Bước 5: Chờ và bấm nút Đăng</span></div>
+    <div class="step-item" id="step-6"><span class="step-icon">○</span><span>Bước 6: Xác nhận popup Đăng ngay</span></div>
+    <div class="step-item" id="step-7"><span class="step-icon">○</span><span>Bước 7: Chờ chuyển sang trang Nội dung</span></div>
+    <div class="step-item" id="step-8"><span class="step-icon">○</span><span>Bước 8: Bấm nút Tải lên (Quay lại)</span></div>
+    <div class="step-item" id="step-9"><span class="step-icon">○</span><span>Bước 9: Xác nhận về lại trang Upload</span></div>
+</div>
+            <div class="progress-bar-container" style="margin-bottom: 0;">
+                <div class="progress-bar-fill" id="stepProgressBarFill" style="background: #fe2c55;"></div>
+            </div>
+        </div>
+
+        <div id="delayPanel">
+            <div class="delay-title">Đang chờ để đăng video tiếp theo</div>
+            <div class="delay-timer" id="delayTimerText">05:00</div>
+        </div>
     </div>
 
-    <div class="box">
-        <label>4. Thời gian chờ giữa các video (phút):</label>
-        <input type="number" id="delayMinutes" value="5" min="0" step="0.5">
-    </div>
+    <!-- Màn hình cảm ơn khi kết thúc -->
+    <div id="popupThankYou" style="display: none;"></div>
 
-    <button id="uploadBtn">Tải lên TikTok Studio</button>
     <div id="status"></div>
 
     <script src="popup.js"></script>
